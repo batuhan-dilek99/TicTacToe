@@ -6,26 +6,28 @@
 using namespace std;
 
 
+
+struct Move{
+    int x;
+    int y;
+}typedef mov;
+
 class PlayGround{
 private:
 public:
-    enum scores{
-        X = 1,
-        tie = 0,
-        O = -1
-    };
+
+    const string human = "O";
+    const string ai = "X";
     string ground[3][3];
-    //string winner;
-    PlayerAI ai;
-    PlayerHuman human;
 
     PlayGround();
     void aiMove();
     void humanMove(int row, int col);
     void printGround();
     bool isMovePossible(int row, int col);
+    bool isMoveLeft();
     int checkWinner();
-    int minimax(PlayGround* playground, int depth, bool isMaximizer);
+    int minimax(string board[3][3], int depth, bool isMaximizer);
 
 
     

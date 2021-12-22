@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "PlayGround.h"
+#define INFINITY 999
 
 
 
@@ -27,6 +28,7 @@ void PlayGround::humanMove(int row, int col){
     if (isMovePossible(row, col)){
         this->ground[row - 1][col - 1] = "X";
         this->printGround();
+        puts("");
     }
     else{
         print("The position is not empty", true);
@@ -53,6 +55,17 @@ bool PlayGround::isMovePossible(int row, int col){
     }
 };
 
+bool PlayGround::isMoveLeft(){
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            if (ground[i][j] == "_"){
+                return true;
+            }
+        }
+    }
+    return false;
+};
+
 int PlayGround::checkWinner(){
     string winner = "";
     int result;
@@ -60,28 +73,23 @@ int PlayGround::checkWinner(){
         if (ground[i][0] == ground[i][1] && ground[i][0] == ground[i][2]){
             winner = ground[i][0];
             if(winner == "X"){
-                return 1;
+                return 10;
             }
             else if(winner == "O"){
-                return -1;
-            }
-            else{
-                return 2;
+                return -10;
             }
         }
     }
+
 
     for (int i = 0; i < 3; i++){      //Vertical checking
         if (ground[0][i] == ground[1][i] && ground[0][i] == ground[2][i]){
             winner = ground[0][i];
             if(winner == "X"){
-                return 1;
+                return 10;
             }
             else if(winner == "O"){
-                return -1;
-            }
-            else{
-                return 2;
+                return -10;
             }
         }
     } 
@@ -89,40 +97,36 @@ int PlayGround::checkWinner(){
     if (ground[0][0] == ground[1][1] && ground[0][0] == ground[2][2]){
         winner = ground[0][0];
         if(winner == "X"){
-                return 1;
-            }
-            else if(winner == "O"){
-                return -1;
-            }
-            else{
-                return 2;
-            }
+            return 10;
+        }
+        else if(winner == "O"){
+            return -10;
+        }
+        
     }
     else if (ground[2][0] == ground[1][1] && ground[2][0] == ground[0][2]){
         winner = ground[2][0];
         if(winner == "X"){
-                return 1;
-            }
-            else if(winner == "O"){
-                return -1;
-            }
-            else{
-                return 2;
-            }
+            return 10;
+        }
+        else if(winner == "O"){
+            return -10;
+        }
     }
 
+    return 0;
 }
 void PlayGround::aiMove(){
     int bestScore = -INFINITY;
     int newScore;
-    int score;
+    int score = checkWinner();
     int movei, movej;
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
-            if (this->ground[i][j] == "_"){   //is the spot available
-                this->ground[i][j] == "O";
-                newScore = minimax(this, 0, false);
-                this->ground[i][j] == "_";
+            if (ground[i][j] == "_"){   //is the spot available
+                ground[i][j] = "O";
+                newScore = minimax(ground, 0, false);  //Olmaz ise false yap
+                ground[i][j] = "_";
                 if (score > bestScore){
                     bestScore = score;
                     movei = i;
@@ -133,46 +137,48 @@ void PlayGround::aiMove(){
         }
     }
     this->ground[movei][movej] = "O";
+    this->printGround();
 };
 
-int PlayGround::minimax(PlayGround* playground, int depth, bool isMaximizer){
+int PlayGround::minimax(string board[3][3], int depth, bool isMaximizer){
     int score = checkWinner();
-    int newScore;
-    if(score != 2){
+    int newScore, bestScore;
+    if (score == +10){
+        return score;
+    }
+    else if(score == -10){
+        return score;
+    }
+    if(isMoveLeft()){
         return score;
     }
 
     if(isMaximizer){
-        int bestScore = -INFINITY;
+        bestScore = -INFINITY;
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                if (playground->ground[i][j] == "_"){   //is the spot available
-                    playground->ground[i][j] == "O";
-                    newScore = minimax(this, depth + 1, false);
-                    playground->ground[i][j] == "_";
-                    if (score > bestScore){
-                        bestScore = score;
-                    }
+                if (board[i][j] == "_"){   //is the spot available
+                    board[i][j] = "O";
+                    newScore = minimax(board, depth + 1, false); 
+                    board[i][j] = "_";
+                    bestScore = max(score, newScore);
                 }
             }
         }
+        return bestScore;
     }
     else{
-        int bestScore = INFINITY;
+        bestScore = INFINITY;
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                if (playground->ground[i][j] == "_"){   //is the spot available
-                    playground->ground[i][j] == "X";
-                    newScore = minimax(this, depth + 1, true);
-                    playground->ground[i][j] == "_";
-                    if (score < bestScore){
-                        bestScore = score;
-                    }
+                if (board[i][j] == "_"){   //is the spot available
+                    board[i][j] = "X";
+                    newScore = minimax(board, depth + 1, true);
+                    board[i][j] = "_";
+                    bestScore = min(score, newScore);
                 }
             }
         }
+        return bestScore;
     }
-
-    
-
 }
