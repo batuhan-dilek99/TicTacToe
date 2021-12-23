@@ -11,7 +11,7 @@ int main(void){
     //PlayGround* a = new PlayGround();
     PlayGround a;
     int row, col;
-    int b = a.checkWinner();
+    int b = a.checkWinner(a.ground);
     a.printGround();
     while(b == 0){
         print("Enter your move (row, col) : ", false);
@@ -19,7 +19,7 @@ int main(void){
         a.humanMove(row, col);
         a.aiMove();
         puts("");
-        b = a.checkWinner();
+        b = a.checkWinner(a.ground);
     }
     if (b == 10){
         print("X is the winner", true);

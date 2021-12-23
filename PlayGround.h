@@ -1,8 +1,6 @@
 #ifndef PLAYGROUND_H
 #define PLAYGROUND_H
 #include <iostream>
-#include "human.h"
-#include "ai.h"
 using namespace std;
 
 
@@ -26,7 +24,7 @@ public:
     void printGround();
     bool isMovePossible(int row, int col);
     bool isMoveLeft();
-    int checkWinner();
+    int checkWinner(string board[3][3]);
     int minimax(string board[3][3], int depth, bool isMaximizer);
 
 

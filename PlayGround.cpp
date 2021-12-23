@@ -66,12 +66,11 @@ bool PlayGround::isMoveLeft(){
     return false;
 };
 
-int PlayGround::checkWinner(){
+int PlayGround::checkWinner(string board[3][3]){
     string winner = "";
-    int result;
     for (int i = 0; i < 3; i++){      //Horizontal checking
-        if (ground[i][0] == ground[i][1] && ground[i][0] == ground[i][2]){
-            winner = ground[i][0];
+        if (board[i][0] == board[i][1] && board[i][1] == board[i][2]){
+            winner = board[i][0];
             if(winner == "X"){
                 return 10;
             }
@@ -83,8 +82,8 @@ int PlayGround::checkWinner(){
 
 
     for (int i = 0; i < 3; i++){      //Vertical checking
-        if (ground[0][i] == ground[1][i] && ground[0][i] == ground[2][i]){
-            winner = ground[0][i];
+        if (board[0][i] == board[1][i] && board[1][i] == board[2][i]){
+            winner = board[0][i];
             if(winner == "X"){
                 return 10;
             }
@@ -94,8 +93,8 @@ int PlayGround::checkWinner(){
         }
     } 
 
-    if (ground[0][0] == ground[1][1] && ground[0][0] == ground[2][2]){
-        winner = ground[0][0];
+    if (board[0][0] == board[1][1] && board[1][1] == board[2][2]){
+        winner = board[0][0];
         if(winner == "X"){
             return 10;
         }
@@ -104,8 +103,8 @@ int PlayGround::checkWinner(){
         }
         
     }
-    else if (ground[2][0] == ground[1][1] && ground[2][0] == ground[0][2]){
-        winner = ground[2][0];
+    else if (board[0][2] == board[1][1] && board[1][1] == board[2][0]){
+        winner = board[0][2];
         if(winner == "X"){
             return 10;
         }
@@ -119,16 +118,16 @@ int PlayGround::checkWinner(){
 void PlayGround::aiMove(){
     int bestScore = -INFINITY;
     int newScore;
-    int score = checkWinner();
+    int score = checkWinner(ground);    //this variable checks whether the game is still running or the game has stopped
     int movei, movej;
     for(int i = 0; i < 3; i++){
         for(int j = 0; j < 3; j++){
             if (ground[i][j] == "_"){   //is the spot available
                 ground[i][j] = "O";
-                newScore = minimax(ground, 0, false);  //Olmaz ise false yap
+                newScore = minimax(ground, 0, true);  
                 ground[i][j] = "_";
-                if (score > bestScore){
-                    bestScore = score;
+                if (newScore > bestScore){ 
+                    bestScore = newScore;
                     movei = i;
                     movej = j;
 
@@ -141,7 +140,7 @@ void PlayGround::aiMove(){
 };
 
 int PlayGround::minimax(string board[3][3], int depth, bool isMaximizer){
-    int score = checkWinner();
+    int score = checkWinner(board);
     int newScore, bestScore;
     if (score == +10){
         return score;
@@ -149,8 +148,8 @@ int PlayGround::minimax(string board[3][3], int depth, bool isMaximizer){
     else if(score == -10){
         return score;
     }
-    if(isMoveLeft()){
-        return score;
+    if(!isMoveLeft()){
+        return 0;
     }
 
     if(isMaximizer){
@@ -158,10 +157,10 @@ int PlayGround::minimax(string board[3][3], int depth, bool isMaximizer){
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
                 if (board[i][j] == "_"){   //is the spot available
-                    board[i][j] = "O";
+                    board[i][j] = "X";   
                     newScore = minimax(board, depth + 1, false); 
                     board[i][j] = "_";
-                    bestScore = max(score, newScore);
+                    bestScore = max(bestScore, newScore);  // comparing the new minimax result and the best score
                 }
             }
         }
@@ -172,10 +171,10 @@ int PlayGround::minimax(string board[3][3], int depth, bool isMaximizer){
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
                 if (board[i][j] == "_"){   //is the spot available
-                    board[i][j] = "X";
+                    board[i][j] = "O";   
                     newScore = minimax(board, depth + 1, true);
                     board[i][j] = "_";
-                    bestScore = min(score, newScore);
+                    bestScore = min(bestScore, newScore);
                 }
             }
         }
