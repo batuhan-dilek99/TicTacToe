@@ -8,11 +8,21 @@
 using namespace std;
 void print(string a, bool endline){
     if (endline){
-        cout << a << endl;
+        cout << a << " " << endl;
 
     }
     else{
-        cout << a;
+        cout << a << " ";
+    }
+};
+
+void print(int a, bool endline){
+    if (endline){
+        cout << " " << a << " " << endl;
+
+    }
+    else{
+        cout << " " << a << " ";
     }
 };
 
@@ -67,117 +77,166 @@ bool PlayGround::isMoveLeft(){
 };
 
 int PlayGround::checkWinner(string board[3][3]){
-    string winner = "";
-    for (int i = 0; i < 3; i++){      //Horizontal checking
-        if (board[i][0] == board[i][1] && board[i][1] == board[i][2]){
-            winner = board[i][0];
-            if(winner == "X"){
-                return 10;
-            }
-            else if(winner == "O"){
+   for (int row = 0; row<3; row++)
+    {
+        if (board[row][0]==board[row][1] &&
+            board[row][1]==board[row][2])
+        {
+            if (board[row][0]=="X")
+                return +10;
+            else if (board[row][0]=="O")
                 return -10;
-            }
         }
     }
-
-
-    for (int i = 0; i < 3; i++){      //Vertical checking
-        if (board[0][i] == board[1][i] && board[1][i] == board[2][i]){
-            winner = board[0][i];
-            if(winner == "X"){
-                return 10;
-            }
-            else if(winner == "O"){
+ 
+    // Checking for Columns for X or O victory.
+    for (int col = 0; col<3; col++)
+    {
+        if (board[0][col]==board[1][col] &&
+            board[1][col]==board[2][col])
+        {
+            if (board[0][col]=="X")
+                return +10;
+ 
+            else if (board[0][col]=="O")
                 return -10;
-            }
-        }
-    } 
-
-    if (board[0][0] == board[1][1] && board[1][1] == board[2][2]){
-        winner = board[0][0];
-        if(winner == "X"){
-            return 10;
-        }
-        else if(winner == "O"){
-            return -10;
-        }
-        
-    }
-    else if (board[0][2] == board[1][1] && board[1][1] == board[2][0]){
-        winner = board[0][2];
-        if(winner == "X"){
-            return 10;
-        }
-        else if(winner == "O"){
-            return -10;
         }
     }
-
+ 
+    // Checking for Diagonals for X or O victory.
+    if (board[0][0]==board[1][1] && board[1][1]==board[2][2])
+    {
+        if (board[0][0]=="X")
+            return +10;
+        else if (board[0][0]=="O")
+            return -10;
+    }
+ 
+    if (board[0][2]==board[1][1] && board[1][1]==board[2][0])
+    {
+        if (board[0][2]=="X")
+            return +10;
+        else if (board[0][2]=="O")
+            return -10;
+    }
+ 
+    // Else if none of them have won then return 0
     return 0;
 }
 void PlayGround::aiMove(){
-    int bestScore = -INFINITY;
-    int newScore;
-    int score = checkWinner(ground);    //this variable checks whether the game is still running or the game has stopped
-    int movei, movej;
-    for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-            if (ground[i][j] == "_"){   //is the spot available
+    int bestVal = -1000;
+    int movei,movej;
+ 
+    // Traverse all cells, evaluate minimax function for
+    // all empty cells. And return the cell with optimal
+    // value.
+    for (int i = 0; i<3; i++)
+    {
+        for (int j = 0; j<3; j++)
+        {
+            // Check if cell is empty
+            if (ground[i][j] == "_")
+            {
+                // Make the move
                 ground[i][j] = "O";
-                newScore = minimax(ground, 0, true);  
-                ground[i][j] = "_";
-                if (newScore > bestScore){ 
-                    bestScore = newScore;
+ 
+                // compute evaluation function for this
+                // move.
+                int moveVal = minimax(ground, 0, false);
+ 
+                // Undo the move
+                ground[i][j] = '_';
+ 
+                // If the value of the current move is
+                // more than the best value, then update
+                // best/
+                if (moveVal > bestVal)
+                {
                     movei = i;
                     movej = j;
-
+                    bestVal = moveVal;
                 }
             }
         }
     }
-    this->ground[movei][movej] = "O";
-    this->printGround();
-};
+ 
+    ground[movei][movej] = "O";
+    printGround();
+}
 
 int PlayGround::minimax(string board[3][3], int depth, bool isMaximizer){
     int score = checkWinner(board);
-    int newScore, bestScore;
-    if (score == +10){
+ 
+    // If Maximizer has won the game return his/her
+    // evaluated score
+    if (score == 10)
         return score;
-    }
-    else if(score == -10){
+ 
+    // If Minimizer has won the game return his/her
+    // evaluated score
+    if (score == -10)
         return score;
-    }
-    if(!isMoveLeft()){
+ 
+    // If there are no more moves and no winner then
+    // it is a tie
+    if (isMoveLeft()==false)
         return 0;
-    }
-
-    if(isMaximizer){
-        bestScore = -INFINITY;
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if (board[i][j] == "_"){   //is the spot available
-                    board[i][j] = "X";   
-                    newScore = minimax(board, depth + 1, false); 
+ 
+    // If this maximizer's move
+    if (isMaximizer)
+    {
+        int best = -1000;
+ 
+        // Traverse all cells
+        for (int i = 0; i<3; i++)
+        {
+            for (int j = 0; j<3; j++)
+            {
+                // Check if cell is empty
+                if (board[i][j] == "_")
+                {
+                    // Make the move
+                    board[i][j] = "X";
+ 
+                    // Call minimax recursively and choose
+                    // the maximum value
+                    best = max( best,
+                        minimax(board, depth+1, !isMaximizer) );
+ 
+                    // Undo the move
                     board[i][j] = "_";
-                    bestScore = max(bestScore, newScore);  // comparing the new minimax result and the best score
                 }
             }
         }
-        return bestScore;
+        return best;
     }
-    else{
-        bestScore = INFINITY;
-        for(int i = 0; i < 3; i++){
-            for(int j = 0; j < 3; j++){
-                if (board[i][j] == "_"){   //is the spot available
-                    board[i][j] = "O";   
-                    newScore = minimax(board, depth + 1, true);
+ 
+    // If this minimizer's move
+    else
+    {
+        int best = 1000;
+ 
+        // Traverse all cells
+        for (int i = 0; i<3; i++)
+        {
+            for (int j = 0; j<3; j++)
+            {
+                // Check if cell is empty
+                if (board[i][j] =="_")
+                {
+                    // Make the move
+                    board[i][j] = "O";
+ 
+                    // Call minimax recursively and choose
+                    // the minimum value
+                    best = min(best,
+                           minimax(board, depth+1, !isMaximizer));
+ 
+                    // Undo the move
                     board[i][j] = "_";
-                    bestScore = min(bestScore, newScore);
                 }
             }
         }
-        return bestScore;
+        return best;
     }
 }

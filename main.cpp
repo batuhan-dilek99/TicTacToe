@@ -1,5 +1,4 @@
 #include <iostream>
-#
 #include "PlayGround.cpp"
 
 
@@ -20,6 +19,9 @@ int main(void){
         a.aiMove();
         puts("");
         b = a.checkWinner(a.ground);
+        if (b == 100){
+            break;
+        }
     }
     if (b == 10){
         print("X is the winner", true);
