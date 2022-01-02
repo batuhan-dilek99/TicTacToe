@@ -89,7 +89,7 @@ int PlayGround::checkWinner(string board[3][3]){
         }
     }
  
-    // Checking for Columns for X or O victory.
+    // Checking for Columns
     for (int col = 0; col<3; col++)
     {
         if (board[0][col]==board[1][col] &&
@@ -103,7 +103,7 @@ int PlayGround::checkWinner(string board[3][3]){
         }
     }
  
-    // Checking for Diagonals for X or O victory.
+    // Checking for Diagonals
     if (board[0][0]==board[1][1] && board[1][1]==board[2][2])
     {
         if (board[0][0]=="X")
@@ -124,33 +124,19 @@ int PlayGround::checkWinner(string board[3][3]){
     return 0;
 }
 void PlayGround::aiMove(){
-    int bestVal = -1000;
+    int bestVal = INFINITY;
     int movei,movej;
- 
-    // Traverse all cells, evaluate minimax function for
-    // all empty cells. And return the cell with optimal
-    // value.
-    for (int i = 0; i<3; i++)
+    for (int i = 0; i < 3; i++)
     {
-        for (int j = 0; j<3; j++)
+        for (int j = 0; j < 3; j++)
         {
             // Check if cell is empty
             if (ground[i][j] == "_")
             {
-                // Make the move
                 ground[i][j] = "O";
- 
-                // compute evaluation function for this
-                // move.
-                int moveVal = minimax(ground, 0, false);
- 
-                // Undo the move
+                int moveVal = minimax(ground, 0, true);
                 ground[i][j] = '_';
- 
-                // If the value of the current move is
-                // more than the best value, then update
-                // best/
-                if (moveVal > bestVal)
+                if (moveVal < bestVal)
                 {
                     movei = i;
                     movej = j;
@@ -159,80 +145,54 @@ void PlayGround::aiMove(){
             }
         }
     }
- 
     ground[movei][movej] = "O";
     printGround();
 }
 
 int PlayGround::minimax(string board[3][3], int depth, bool isMaximizer){
     int score = checkWinner(board);
- 
-    // If Maximizer has won the game return his/her
-    // evaluated score
-    if (score == 10)
+
+    if (score == 10){
         return score;
+    }
  
-    // If Minimizer has won the game return his/her
-    // evaluated score
-    if (score == -10)
+    if (score == -10){
         return score;
- 
-    // If there are no more moves and no winner then
-    // it is a tie
-    if (isMoveLeft()==false)
+    }
+    
+    if (isMoveLeft()==false){
         return 0;
- 
-    // If this maximizer's move
+    }
+    
     if (isMaximizer)
     {
-        int best = -1000;
+        int best = -INFINITY;
  
-        // Traverse all cells
         for (int i = 0; i<3; i++)
         {
             for (int j = 0; j<3; j++)
             {
-                // Check if cell is empty
                 if (board[i][j] == "_")
                 {
-                    // Make the move
                     board[i][j] = "X";
- 
-                    // Call minimax recursively and choose
-                    // the maximum value
-                    best = max( best,
-                        minimax(board, depth+1, !isMaximizer) );
- 
-                    // Undo the move
+                    best = max(best, minimax(board, depth+1, !isMaximizer) );
                     board[i][j] = "_";
                 }
             }
         }
         return best;
     }
- 
-    // If this minimizer's move
     else
     {
-        int best = 1000;
- 
-        // Traverse all cells
+        int best = INFINITY;
         for (int i = 0; i<3; i++)
         {
             for (int j = 0; j<3; j++)
             {
-                // Check if cell is empty
                 if (board[i][j] =="_")
                 {
-                    // Make the move
                     board[i][j] = "O";
- 
-                    // Call minimax recursively and choose
-                    // the minimum value
-                    best = min(best,
-                           minimax(board, depth+1, !isMaximizer));
- 
-                    // Undo the move
+                    best = min(best, minimax(board, depth+1, !isMaximizer));
                     board[i][j] = "_";
                 }
             }
