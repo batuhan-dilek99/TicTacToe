@@ -134,10 +134,10 @@ void PlayGround::aiMove(){
             if (ground[i][j] == "_")
             {
                 ground[i][j] = "O";
-                
+
                 //calling minimax for maximizer
                 //Because we want to know the score of the other iteration not our inital state. 
-                //Our inital state is minimizing.
+                //Our inital state is minimizing and the minimax() should be called for the maximizer
                 int moveVal = minimax(ground, 0, true);  
                 ground[i][j] = '_';
                 

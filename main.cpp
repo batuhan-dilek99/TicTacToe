@@ -16,10 +16,11 @@ int main(void){
         print("Enter your move (row, col) : ", false);
         cin >> row >> col;
         a.humanMove(row, col);
+        cout << "O's move : " << endl;
         a.aiMove();
         puts("");
         b = a.checkWinner(a.ground);
-        if (b == 100){
+        if (b != 0){
             break;
         }
     }
