@@ -134,8 +134,15 @@ void PlayGround::aiMove(){
             if (ground[i][j] == "_")
             {
                 ground[i][j] = "O";
-                int moveVal = minimax(ground, 0, true);
+                
+                //calling minimax for maximizer
+                //Because we want to know the score of the other iteration not our inital state. 
+                //Our inital state is minimizing.
+                int moveVal = minimax(ground, 0, true);  
                 ground[i][j] = '_';
+                
+                //Thats why we move if moreVal < bestVal
+                //Our initial node should pick the smallest result of the branches of the game tree.
                 if (moveVal < bestVal)
                 {
                     movei = i;
